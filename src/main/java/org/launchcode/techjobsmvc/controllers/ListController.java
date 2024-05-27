@@ -22,6 +22,7 @@ public class ListController {
     static HashMap<String, Object> tableChoices = new HashMap<>();
 
     public ListController () {
+        // constructor, populating columnChoices and tableChoices
         columnChoices.put("all", "All");
         columnChoices.put("employer", "Employer");
         columnChoices.put("location", "Location");
@@ -35,6 +36,7 @@ public class ListController {
     }
 
     @GetMapping(value = "")
+    // list handler method - displays table of clickable links for job categories
     public String list(Model model) {
         model.addAttribute("columns", columnChoices);
         model.addAttribute("tableChoices", tableChoices);
@@ -47,6 +49,9 @@ public class ListController {
     }
 
     @GetMapping(value = "jobs")
+    // handler method - displays jobs as they relate to job categories
+    // note this is a result of clicking a link within "list" view, not a form submission
+    // note also, this method deals with an "all" scenario differently than if user clicks category links
     public String listJobsByColumnAndValue(Model model, @RequestParam String column, @RequestParam(required = false) String value) {
         ArrayList<Job> jobs;
         if (column.equals("all")){

@@ -13,6 +13,7 @@ import java.util.HashMap;
 public class HomeController {
 
     @GetMapping(value = "/")
+    // displays app homepage - renders index.html in resources/templates
     public String index(Model model) {
 
         HashMap<String, String> actionChoices = new HashMap<>();
