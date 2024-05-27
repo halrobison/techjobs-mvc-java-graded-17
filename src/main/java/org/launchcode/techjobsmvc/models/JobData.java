@@ -14,9 +14,6 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by LaunchCode
- */
 public class JobData {
 
     private static final String DATA_FILE = "job_data.csv";
@@ -28,47 +25,37 @@ public class JobData {
     private static ArrayList<PositionType> allPositionTypes = new ArrayList<>();
     private static ArrayList<CoreCompetency> allCoreCompetency = new ArrayList<>();
 
-    /**
-     * Fetch list of all job objects from loaded data,
-     * without duplicates, then return a copy.
-     */
 
+    //  returns copy of all job objects in loaded data, no duplicates
     public static ArrayList<Job> findAll() {
-
-        // load data, if not already loaded
-        loadData();
-
-        // Bonus mission; normal version returns allJobs
+        loadData(); // loads data, if not already loaded
         return new ArrayList<>(allJobs);
     }
-
-    /**
-     * Returns the results of searching the Jobs data by field and search term.
+    /*
+     * Returns results of searching Jobs data by field & search term
      *
-     * For example, searching for employer "Enterprise" will include results
-     * with "Enterprise Holdings, Inc".
+     * searching employer "Enterprise" --> "Enterprise Holdings, Inc"
      *
-     * @param column Job field that should be searched.
-     * @param value Value of the field to search for.
-     * @return List of all jobs matching the criteria.
+     * @param column --> search Job field
+     * @param value --> searched field value
+     * @return --> List of all jobs matching criteria
      */
     public static ArrayList<Job> findByColumnAndValue(String column, String value) {
 
-        // load data, if not already loaded
-        loadData();
+        loadData(); // loads data, if not already loaded
 
         ArrayList<Job> jobs = new ArrayList<>();
 
-        if (value.toLowerCase().equals("all")){
+        if (value.toLowerCase().equals("all")) {
             return findAll();
         }
 
-        if (column.equals("all")){
+        if (column.equals("all")) {
             jobs = findByValue(value);
             return jobs;
         }
-        for (Job job : allJobs) {
 
+        for (Job job : allJobs) {
             String aValue = getFieldValue(job, column);
 
             if (aValue != null && aValue.toLowerCase().contains(value.toLowerCase())) {
@@ -79,7 +66,40 @@ public class JobData {
         return jobs;
     }
 
-    public static String getFieldValue(Job job, String fieldName){
+    public static ArrayList<Job> findByFilter(String column, String value, String filterColumn, String filterValue) {
+
+        loadData(); // loads data, if not already loaded
+
+        ArrayList<Job> jobs = new ArrayList<>();
+        ArrayList<Job> filteredJobs = new ArrayList<>();
+
+        if (column.equals("all")) {
+            filteredJobs = findByValue(value);
+            for (Job filteredJob : filteredJobs) {
+                String aValue = getFieldValue(filteredJob, filterColumn);
+                if (aValue != null && aValue.toLowerCase().contains(filterValue.toLowerCase())) {
+                    jobs.add(filteredJob);
+                }
+            }
+        }
+        else {
+            for (Job job : allJobs) {
+                String aValue = getFieldValue(job, column);
+                if (aValue != null && aValue.toLowerCase().contains(value.toLowerCase())) {
+                    filteredJobs.add(job);
+                }
+            }
+            for (Job filteredJob : filteredJobs) {
+                String aValue = getFieldValue(filteredJob, filterColumn);
+                if (aValue != null && aValue.toLowerCase().contains(filterValue.toLowerCase())) {
+                    jobs.add(filteredJob);
+                }
+            }
+        }
+        return jobs;
+    }
+
+    public static String getFieldValue(Job job, String fieldName) {
         String theValue;
         if (fieldName.equals("name")){
             theValue = job.getName();
@@ -95,21 +115,16 @@ public class JobData {
 
         return theValue;
     }
-    /**
-     * Search all Job fields for the given term.
-     *
-     * @param value The search term to look for.
-     * @return      List of all jobs with at least one field containing the value.
-     */
+    //  Searches all Job fields for given term
+//    @param value --> term to search
+//    @return --> all jobs with at least one field containing value
     public static ArrayList<Job> findByValue(String value) {
 
-        // load data, if not already loaded
-        loadData();
+        loadData(); // loads data, if not already loaded
 
         ArrayList<Job> jobs = new ArrayList<>();
 
         for (Job job : allJobs) {
-
             if (job.getName().toLowerCase().contains(value.toLowerCase())) {
                 jobs.add(job);
             } else if (job.getEmployer().toString().toLowerCase().contains(value.toLowerCase())) {
@@ -121,34 +136,25 @@ public class JobData {
             } else if (job.getCoreCompetency().toString().toLowerCase().contains(value.toLowerCase())) {
                 jobs.add(job);
             }
-
         }
-
         return jobs;
     }
 
-    private static Object findExistingObject(ArrayList list, String value){
+    private static Object findExistingObject(ArrayList list, String value) {
         for (Object item : list){
-            if (item.toString().toLowerCase().equals(value.toLowerCase())){
+            if (item.toString().toLowerCase().equals(value.toLowerCase())) {
                 return item;
             }
         }
         return null;
     }
 
-    /**
-     * Read in data from a CSV file and store it in an ArrayList of Job objects.
-     */
+    //  reads in data from a CSV file & stores in ArrayList of Job objects
     private static void loadData() {
-
-        // Only load data once
-        if (isDataLoaded) {
-            return;
-        }
-
+        // only loads data once
+        if (isDataLoaded) { return; }
         try {
-
-            // Open the CSV file and set up pull out column header info and records
+            // opens CSV file & sets up fetching column header info & records
             Resource resource = new ClassPathResource(DATA_FILE);
             InputStream is = resource.getInputStream();
             Reader reader = new InputStreamReader(is);
@@ -159,7 +165,7 @@ public class JobData {
 
             allJobs = new ArrayList<>();
 
-            // Put the records into a more friendly format
+            // puts records in friendlier format
             for (CSVRecord record : records) {
 
                 String aName = record.get(0);
@@ -173,12 +179,12 @@ public class JobData {
                 PositionType newPosition = (PositionType) findExistingObject(allPositionTypes, aPosition);
                 CoreCompetency newSkill = (CoreCompetency) findExistingObject(allCoreCompetency, aSkill);
 
-                if (newEmployer == null){
+                if (newEmployer == null) {
                     newEmployer = new Employer(anEmployer);
                     allEmployers.add(newEmployer);
                 }
 
-                if (newLocation == null){
+                if (newLocation == null) {
                     newLocation = new Location(aLocation);
                     allLocations.add(newLocation);
                 }
@@ -197,7 +203,7 @@ public class JobData {
 
                 allJobs.add(newJob);
             }
-            // flag the data as loaded, so we don't do it twice
+            // flags data as loaded to prevent doing twice
             isDataLoaded = true;
 
         } catch (IOException e) {
@@ -229,7 +235,4 @@ public class JobData {
         allCoreCompetency.sort(new NameSorter());
         return allCoreCompetency;
     }
-
 }
-
-

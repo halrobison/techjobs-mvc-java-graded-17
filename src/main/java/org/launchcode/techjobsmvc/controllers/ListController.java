@@ -11,24 +11,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
- * Created by LaunchCode
- */
+
 @Controller
 @RequestMapping(value = "list")
-public class ListController {
+public class ListController extends TechJobsController {
 
-    static HashMap<String, String> columnChoices = new HashMap<>();
     static HashMap<String, Object> tableChoices = new HashMap<>();
 
     public ListController () {
-        // constructor, populating columnChoices and tableChoices
-        columnChoices.put("all", "All");
-        columnChoices.put("employer", "Employer");
-        columnChoices.put("location", "Location");
-        columnChoices.put("positionType", "Position Type");
-        columnChoices.put("coreCompetency", "Skill");
-
         tableChoices.put("employer", JobData.getAllEmployers());
         tableChoices.put("location", JobData.getAllLocations());
         tableChoices.put("positionType", JobData.getAllPositionTypes());
@@ -36,9 +26,7 @@ public class ListController {
     }
 
     @GetMapping(value = "")
-    // list handler method - displays table of clickable links for job categories
     public String list(Model model) {
-        model.addAttribute("columns", columnChoices);
         model.addAttribute("tableChoices", tableChoices);
         model.addAttribute("employers", JobData.getAllEmployers());
         model.addAttribute("locations", JobData.getAllLocations());
@@ -49,21 +37,48 @@ public class ListController {
     }
 
     @GetMapping(value = "jobs")
-    // handler method - displays jobs as they relate to job categories
-    // note this is a result of clicking a link within "list" view, not a form submission
-    // note also, this method deals with an "all" scenario differently than if user clicks category links
-    public String listJobsByColumnAndValue(Model model, @RequestParam String column, @RequestParam(required = false) String value) {
+    public String listJobsByColumnAndValue(
+            Model model,
+            @RequestParam String column,
+            @RequestParam(required = false) String value,
+            @RequestParam(required = false) String filterColumn,
+            @RequestParam(required = false) String filterValue
+    ) {
         ArrayList<Job> jobs;
-        if (column.equals("all")){
-            jobs = JobData.findAll();
-            model.addAttribute("title", "All Jobs");
-        } else {
-            jobs = JobData.findByColumnAndValue(column, value);
-            model.addAttribute("title", "Jobs with " + columnChoices.get(column) + ": " + value);
+
+        // needs refactoring?
+        if (column.equals("all")) { // if listing "view all" or searching "all"
+            // user arrives from "/list" page since listing lacks filterValue
+            if (filterValue == null || filterValue.isEmpty()) {
+                jobs = JobData.findAll();
+                model.addAttribute("title", "All Jobs");
+            }
+            else { // user arrives from "/search" page
+                jobs = JobData.findByFilter(column, value, filterColumn, filterValue);
+                model.addAttribute(
+                        "title",
+                        value+" Jobs with "+getColumnChoices().get(filterColumn)+": "+filterValue
+                );
+            }
+        }
+        else { // neither listing "view all" nor searching "all"
+            // user arrives from "/list" page since listing lacks filterValue
+            if (filterValue == null || filterValue.isEmpty()) {
+                jobs = JobData.findByColumnAndValue(column, value);
+                model.addAttribute(
+                        "title",
+                        "Jobs with "+getColumnChoices().get(column)+": "+value
+                );
+            }
+            else { // user arrives from "/search" page
+                jobs = JobData.findByFilter(column, value, filterColumn, filterValue);
+                model.addAttribute(
+                        "title",
+                        "Jobs with "+getColumnChoices().get(column)+": "+value+" & "+filterColumn+": "+filterValue
+                );
+            }
         }
         model.addAttribute("jobs", jobs);
-
         return "list-jobs";
     }
 }
-
