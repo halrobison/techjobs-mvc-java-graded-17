@@ -13,13 +13,13 @@ public class Job {
     private PositionType positionType;
     private CoreCompetency coreCompetency;
 
-    // Initializes unique ID
+    // initialize ID
     public Job() {
         id = nextId;
         nextId++;
     }
 
-    // Initializes id & value fields
+    // initialize ID and value fields
     public Job(String aName, Employer anEmployer, Location aLocation, PositionType aPositionType, CoreCompetency aCoreCompetency) {
         this();
         name = aName;

@@ -115,9 +115,7 @@ public class JobData {
 
         return theValue;
     }
-    //  Searches all Job fields for given term
-//    @param value --> term to search
-//    @return --> all jobs with at least one field containing value
+
     public static ArrayList<Job> findByValue(String value) {
 
         loadData(); // loads data, if not already loaded
@@ -149,12 +147,9 @@ public class JobData {
         return null;
     }
 
-    //  reads in data from a CSV file & stores in ArrayList of Job objects
     private static void loadData() {
-        // only loads data once
         if (isDataLoaded) { return; }
         try {
-            // opens CSV file & sets up fetching column header info & records
             Resource resource = new ClassPathResource(DATA_FILE);
             InputStream is = resource.getInputStream();
             Reader reader = new InputStreamReader(is);
@@ -165,7 +160,6 @@ public class JobData {
 
             allJobs = new ArrayList<>();
 
-            // puts records in friendlier format
             for (CSVRecord record : records) {
 
                 String aName = record.get(0);
@@ -203,7 +197,6 @@ public class JobData {
 
                 allJobs.add(newJob);
             }
-            // flags data as loaded to prevent doing twice
             isDataLoaded = true;
 
         } catch (IOException e) {

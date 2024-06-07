@@ -46,9 +46,7 @@ public class ListController extends TechJobsController {
     ) {
         ArrayList<Job> jobs;
 
-        // needs refactoring?
-        if (column.equals("all")) { // if listing "view all" or searching "all"
-            // user arrives from "/list" page since listing lacks filterValue
+        if (column.equals("all")) {
             if (filterValue == null || filterValue.isEmpty()) {
                 jobs = JobData.findAll();
                 model.addAttribute("title", "All Jobs");

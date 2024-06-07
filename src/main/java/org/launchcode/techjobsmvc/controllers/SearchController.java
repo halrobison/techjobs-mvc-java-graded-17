@@ -17,7 +17,6 @@ public class SearchController extends TechJobsController {
 
     @GetMapping(value = "")
     public String search(Model model) {
-//      first bonus task --> radio dial selection defaults to all
         model.addAttribute("selectedType", "all");
         return "search";
     }
@@ -36,7 +35,6 @@ public class SearchController extends TechJobsController {
             );
         }
         jobs = JobData.findByColumnAndValue(searchType, searchTerm);
-//      first bonus task keeps radio dial selected on search results page
         model.addAttribute("selectedType", searchType);
         model.addAttribute("selectedKeyword", searchTerm);
         model.addAttribute("jobs", jobs);

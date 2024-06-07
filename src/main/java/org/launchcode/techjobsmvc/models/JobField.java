@@ -7,14 +7,11 @@ public abstract class JobField {
     private static int nextId = 1;
     private String value;
 
-    //  constructor assigns unique ID number to each new object
     public JobField() {
         id = nextId;
         nextId++;
     }
 
-    //  constructor takes string param assigned to 'value' field
-//    & calls empty constructor to initialize 'id' field
     public JobField(String value) {
         this();
         this.value = value;
@@ -25,7 +22,6 @@ public abstract class JobField {
         return value;
     }
 
-    //  equivalent objects have same id fields
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -39,7 +35,6 @@ public abstract class JobField {
         return Objects.hash(id);
     }
 
-    //  getters & setters
     public int getId() {
         return id;
     }
